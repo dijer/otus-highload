@@ -1,0 +1,16 @@
+[server]
+host = "localhost"
+port = 8080
+
+[database]
+host = "localhost"
+port = 5432
+user = "otus_user"
+password = "otus_password"
+dbname = "otus"
+
+[auth]
+jwt_cookie_name = "token"
+jwt_key = "secret_key"
+jwt_expire_hours   = 24
+
