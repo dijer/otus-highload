@@ -39,7 +39,15 @@ export const LoginForm = () => {
 				return;
 			}
 			throw new Error('failed login');
-		} catch {
+		} catch (e: any) {
+			if (e?.status === 401) {
+				showToast({
+					type: 'error',
+					message: 'Wrong Login or Password',
+				});
+				return;
+			}
+
 			showToast({
 				type: 'error',
 				message: 'Server Error',

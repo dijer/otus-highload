@@ -7,7 +7,7 @@ import {
 	TextField,
 } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ErrorResponse, useNavigate } from 'react-router-dom';
 import { IUserWithPassword } from '../../model/user.model';
 import { useToast } from '../../../../app/ui/toast-provider/toast-provider';
 import { useRegisterMutation } from '../../model/auth.api';
@@ -60,7 +60,15 @@ export const RegisterForm = () => {
 				return;
 			}
 			throw new Error('failed register');
-		} catch {
+		} catch (e: any) {
+			if (e?.status === 409) {
+				showToast({
+					type: 'error',
+					message: 'User already exists',
+				});
+				return;
+			}
+
 			showToast({
 				type: 'error',
 				message: 'Server Error',
