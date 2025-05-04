@@ -25,7 +25,6 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({
 				navigate(route.LOGIN);
 			}
 		};
-		console.log(isAuth);
 		if (isAuth && !isChecked) {
 			check();
 		}

@@ -11,7 +11,6 @@ import (
 )
 
 func New(ctx context.Context, config config.DatabaseConf) (*sql.DB, error) {
-	println(config.User, config.Password, config.Host, config.Port, config.DBName)
 	dsn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		config.User, config.Password, config.Host, config.Port, config.DBName,

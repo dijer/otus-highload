@@ -10,6 +10,7 @@ import (
 	handler_auth "github.com/dijer/otus-highload/backend/internal/handlers/auth"
 	handler_profile "github.com/dijer/otus-highload/backend/internal/handlers/profile"
 	handler_user "github.com/dijer/otus-highload/backend/internal/handlers/user"
+	"github.com/dijer/otus-highload/backend/internal/logger"
 	middleware_auth "github.com/dijer/otus-highload/backend/internal/middlewares/auth"
 	service_user "github.com/dijer/otus-highload/backend/internal/services/user"
 	storage_user "github.com/dijer/otus-highload/backend/internal/storage/user"
@@ -23,13 +24,15 @@ type Server struct {
 	cfg     config.ServerConf
 	db      *sql.DB
 	authCfg config.AuthConf
+	log     logger.Logger
 }
 
-func New(cfg config.ServerConf, db *sql.DB, authCfg config.AuthConf) *Server {
+func New(cfg config.ServerConf, db *sql.DB, authCfg config.AuthConf, log logger.Logger) *Server {
 	return &Server{
 		cfg:     cfg,
 		db:      db,
 		authCfg: authCfg,
+		log:     log,
 	}
 }
 
@@ -59,6 +62,6 @@ func (s *Server) Start(ctx context.Context) error {
 		AllowCredentials: true,
 	})
 
-	println("Server runs on port: " + strconv.Itoa(s.cfg.Port))
+	s.log.Info("Server runs on port: " + strconv.Itoa(s.cfg.Port))
 	return http.ListenAndServe(net.JoinHostPort(s.cfg.Host, strconv.Itoa(s.cfg.Port)), corsHandler.Handler(r))
 }

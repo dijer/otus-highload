@@ -1,1 +1,1 @@
-export { Navigation as default } from './ui/navigation';
+export { Navigation as default } from './ui/navigation/navigation';

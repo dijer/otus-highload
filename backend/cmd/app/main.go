@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"os/signal"
 	"syscall"
 
 	"github.com/dijer/otus-highload/backend/internal/config"
 	infra_database "github.com/dijer/otus-highload/backend/internal/infra/database"
+	"github.com/dijer/otus-highload/backend/internal/logger"
 	"github.com/dijer/otus-highload/backend/internal/server"
+	"go.uber.org/zap"
 )
 
 var configFile string
@@ -21,9 +22,16 @@ func init() {
 func main() {
 	flag.Parse()
 
+	log, err := zap.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+
+	logger := logger.New(log)
+
 	cfg, err := config.New(configFile)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error(err.Error())
 		return
 	}
 
@@ -32,22 +40,22 @@ func main() {
 
 	db, err := infra_database.New(ctx, cfg.Database)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error(err.Error())
 		return
 	}
 	defer db.Close()
 
-	server := server.New(cfg.Server, db, cfg.Auth)
+	server := server.New(cfg.Server, db, cfg.Auth, logger)
 
 	go func() {
 		err = server.Start(ctx)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Error(err.Error())
 			return
 		}
 	}()
 
 	<-ctx.Done()
 
-	println("Server stopped")
+	log.Info("Server stopped")
 }

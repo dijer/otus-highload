@@ -1,5 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
+CREATE TYPE gender AS ENUM ('male', 'female');
+
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   username TEXT NOT NULL UNIQUE,
@@ -7,7 +9,7 @@ CREATE TABLE users (
   first_name TEXT,
   last_name TEXT,
   birthday DATE,
-  gender TEXT,
+  gender gender,
   interests TEXT[],
   city TEXT
 )
@@ -15,5 +17,7 @@ CREATE TABLE users (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE users
+DROP TABLE IF EXISTS users
+
+DROP TYPE IF EXISTS gender;
 -- +goose StatementEnd
