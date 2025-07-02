@@ -11,6 +11,7 @@ export const Navigation = () => {
 					<Toolbar sx={{ color: 'inherit' }} disableGutters>
 						<Box sx={{ display: 'flex', gap: 2, flexGrow: 1 }}>
 							<NavLink to={route.HOME}>Home</NavLink>
+							<NavLink to={route.SEARCH}>Search</NavLink>
 						</Box>
 						<AuthNavigation />
 					</Toolbar>

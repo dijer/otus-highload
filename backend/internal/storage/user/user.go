@@ -72,3 +72,45 @@ func (s *UserStorage) GetUser(userID int) (*models.User, error) {
 
 	return &user, nil
 }
+
+func (s *UserStorage) GetUsers(firstname, lastname string) ([]models.User, error) {
+	users := make([]models.User, 0)
+
+	firstnamePattern := firstname + "%"
+	lastnamePattern := lastname + "%"
+
+	rows, err := s.db.Query(`
+		SELECT username, first_name, last_name, birthday, gender, interests, city
+		FROM users
+		WHERE LOWER(first_name) LIKE LOWER($1) AND LOWER(last_name) LIKE LOWER($2)
+		ORDER BY id`,
+		firstnamePattern, lastnamePattern)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(
+			&user.UserName,
+			&user.FirstName,
+			&user.LastName,
+			&user.Birthday,
+			&user.Gender,
+			pq.Array(&user.Interests),
+			&user.City,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Grid, TextField } from '@mui/material';
-import { IUser } from '../../model/user.model';
+import { IUser } from '../../../../entities/user';
 
 interface IProps extends IUser {}
 

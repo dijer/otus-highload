@@ -34,10 +34,10 @@ export const AuthNavigation = () => {
 		};
 
 		return (
-			<>
+			<Box sx={{ display: 'flex', gap: 2 }}>
 				<NavLink to={route.PROFILE}>Profile</NavLink>
 				<NavLink onClick={handleLogoutHandler}>Logout</NavLink>
-			</>
+			</Box>
 		);
 	}
 

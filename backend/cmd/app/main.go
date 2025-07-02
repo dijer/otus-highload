@@ -46,16 +46,20 @@ func main() {
 	defer db.Close()
 
 	server := server.New(cfg.Server, db, cfg.Auth, logger)
+	errCh := make(chan error, 1)
 
 	go func() {
-		err = server.Start(ctx)
-		if err != nil {
-			log.Error(err.Error())
-			return
-		}
+		errCh <- server.Start(ctx)
 	}()
 
-	<-ctx.Done()
+	select {
+	case <-ctx.Done():
+		log.Info("Shutdown signal")
+	case err := <-errCh:
+		if err != nil {
+			log.Error("Server error: " + err.Error())
+		}
+	}
 
 	log.Info("Server stopped")
 }

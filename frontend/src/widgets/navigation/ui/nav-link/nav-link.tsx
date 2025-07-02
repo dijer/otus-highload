@@ -19,6 +19,7 @@ export const NavLink: React.FC<React.PropsWithChildren<IProps>> = ({
 		<Link
 			sx={{
 				color: 'inherit',
+				cursor: 'pointer',
 				textDecoration: isActive ? 'underline' : 'inherit',
 			}}
 			href={to}

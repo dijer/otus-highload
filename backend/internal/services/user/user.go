@@ -53,3 +53,7 @@ func checkHashedPassword(password, hashedPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
 }
+
+func (s *UserService) GetUsers(firstname, lastname string) ([]models.User, error) {
+	return s.storage.GetUsers(firstname, lastname)
+}
