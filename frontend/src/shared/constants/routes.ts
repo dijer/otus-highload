@@ -4,4 +4,5 @@ export enum route {
 	REGISTER = '/register',
 	USER = '/user',
 	PROFILE = '/profile',
+	SEARCH = '/search',
 }

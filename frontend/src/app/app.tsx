@@ -7,6 +7,7 @@ import Navigation from '../widgets/navigation';
 import { route } from '../shared/constants/routes';
 import UserPage from '../pages/user';
 import ProfilePage from '../pages/profile';
+import SearchPage from '../pages/search';
 
 export const App = () => {
 	return (
@@ -18,6 +19,7 @@ export const App = () => {
 				<Route path={route.LOGIN} element={<LoginPage />} />
 				<Route path={`${route.USER}/:id`} element={<UserPage />} />
 				<Route path={route.PROFILE} element={<ProfilePage />} />
+				<Route path={route.SEARCH} element={<SearchPage />} />
 				<Route path="*" element={<NotFoundPage />} />
 			</Routes>
 		</>

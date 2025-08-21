@@ -10,6 +10,7 @@ import (
 	handler_auth "github.com/dijer/otus-highload/backend/internal/handlers/auth"
 	handler_profile "github.com/dijer/otus-highload/backend/internal/handlers/profile"
 	handler_user "github.com/dijer/otus-highload/backend/internal/handlers/user"
+	handler_user_search "github.com/dijer/otus-highload/backend/internal/handlers/user-search"
 	"github.com/dijer/otus-highload/backend/internal/logger"
 	middleware_auth "github.com/dijer/otus-highload/backend/internal/middlewares/auth"
 	service_user "github.com/dijer/otus-highload/backend/internal/services/user"
@@ -54,6 +55,9 @@ func (s *Server) Start(ctx context.Context) error {
 
 	profileHandler := handler_profile.New(userService)
 	r.Handle("/user/profile", authMiddleware.Handler(http.HandlerFunc(profileHandler.Handler)))
+
+	userSearchHandler := handler_user_search.New(userService)
+	r.HandleFunc("/user/search", userSearchHandler.Handler)
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
