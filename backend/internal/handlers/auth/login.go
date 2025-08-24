@@ -18,7 +18,7 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := h.service.CheckUserPassword(user)
+	userID, err := h.service.CheckUserPassword(r.Context(), user)
 	if err != nil {
 		utils_server.JsonError(w, http.StatusUnauthorized, "Invalid username or password")
 		return

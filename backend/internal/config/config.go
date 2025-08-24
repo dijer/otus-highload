@@ -5,9 +5,10 @@ import (
 )
 
 type Config struct {
-	Database DatabaseConf `toml:"database"`
-	Server   ServerConf   `toml:"server"`
-	Auth     AuthConf     `toml:"auth"`
+	Database DatabaseConf   `toml:"database"`
+	Replicas []DatabaseConf `toml:"replica"`
+	Server   ServerConf     `toml:"server"`
+	Auth     AuthConf       `toml:"auth"`
 }
 
 type DatabaseConf struct {

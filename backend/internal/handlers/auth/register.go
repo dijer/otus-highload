@@ -18,7 +18,7 @@ func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.CreateUser(user); err != nil {
+	if err := h.service.CreateUser(r.Context(), user); err != nil {
 		if errors.Is(err, errs.ErrUserAlreadyExists) {
 			utils_server.JsonError(w, http.StatusConflict, "User already exists")
 			return

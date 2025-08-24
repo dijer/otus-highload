@@ -44,7 +44,7 @@ func (h *UserSearchHandler) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err := h.service.GetUsers(params.FirstName, params.LastName)
+	users, err := h.service.GetUsers(r.Context(), params.FirstName, params.LastName)
 	if err != nil {
 		utils_server.JsonError(w, http.StatusInternalServerError, "Failed get users by firstname and lastname")
 		return

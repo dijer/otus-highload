@@ -9,6 +9,20 @@ user = "otus_user"
 password = "otus_password"
 dbname = "otus"
 
+[[replica]]
+host = "localhost"
+port = 5433
+user = "otus_user"
+password = "otus_password"
+dbname = "otus"
+
+[[replica]]
+host = "localhost"
+port = 5433
+user = "otus_user"
+password = "otus_password"
+dbname = "otus"
+
 [auth]
 jwt_cookie_name = "token"
 jwt_key = "secret_key"

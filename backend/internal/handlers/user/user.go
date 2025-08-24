@@ -29,7 +29,7 @@ func (h *UserHandler) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.service.GetUser(userID)
+	user, err := h.service.GetUser(r.Context(), userID)
 	if err != nil {
 		utils_server.JsonError(w, http.StatusBadRequest, "Cant get user by userID")
 		return
