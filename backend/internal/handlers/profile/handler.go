@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	service_user "github.com/dijer/otus-highload/backend/internal/services/user"
+	"github.com/dijer/otus-highload/backend/internal/utils/httpctx"
 	utils_server "github.com/dijer/otus-highload/backend/internal/utils/server"
 )
 
@@ -18,7 +19,11 @@ func New(service *service_user.UserService) *ProfileHandler {
 }
 
 func (h *ProfileHandler) Handler(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userId").(int)
+	userID := httpctx.GetUserID(r)
+	if userID == 0 {
+		utils_server.JsonError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
 
 	user, err := h.service.GetUser(r.Context(), userID)
 	if err != nil {

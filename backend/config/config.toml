@@ -28,3 +28,8 @@ jwt_cookie_name = "token"
 jwt_key = "secret_key"
 jwt_expire_hours   = 24
 
+[redis]
+host = "localhost"
+port = 6379
+password = ""
+db = 0
