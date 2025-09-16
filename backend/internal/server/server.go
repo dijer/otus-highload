@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"database/sql"
 	"net"
 	"net/http"
 	"strconv"
@@ -11,6 +10,7 @@ import (
 	handler_profile "github.com/dijer/otus-highload/backend/internal/handlers/profile"
 	handler_user "github.com/dijer/otus-highload/backend/internal/handlers/user"
 	handler_user_search "github.com/dijer/otus-highload/backend/internal/handlers/user-search"
+	infra_database "github.com/dijer/otus-highload/backend/internal/infra/database"
 	"github.com/dijer/otus-highload/backend/internal/logger"
 	middleware_auth "github.com/dijer/otus-highload/backend/internal/middlewares/auth"
 	service_user "github.com/dijer/otus-highload/backend/internal/services/user"
@@ -22,25 +22,25 @@ import (
 )
 
 type Server struct {
-	cfg     config.ServerConf
-	db      *sql.DB
-	authCfg config.AuthConf
-	log     logger.Logger
+	cfg      config.ServerConf
+	dbRouter infra_database.DBRouter
+	authCfg  config.AuthConf
+	log      logger.Logger
 }
 
-func New(cfg config.ServerConf, db *sql.DB, authCfg config.AuthConf, log logger.Logger) *Server {
+func New(cfg config.ServerConf, dbRouter infra_database.DBRouter, authCfg config.AuthConf, log logger.Logger) *Server {
 	return &Server{
-		cfg:     cfg,
-		db:      db,
-		authCfg: authCfg,
-		log:     log,
+		cfg:      cfg,
+		dbRouter: dbRouter,
+		authCfg:  authCfg,
+		log:      log,
 	}
 }
 
 func (s *Server) Start(ctx context.Context) error {
 	r := mux.NewRouter()
 
-	userStorage := storage_user.New(s.db)
+	userStorage := storage_user.New(s.dbRouter)
 	userService := service_user.New(userStorage)
 
 	authHandler := handler_auth.New(userService, s.authCfg)

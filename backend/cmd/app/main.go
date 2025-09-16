@@ -38,14 +38,14 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
 
-	db, err := infra_database.New(ctx, cfg.Database)
+	dbRouter, err := infra_database.New(ctx, cfg.Database, cfg.Replicas)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
-	defer db.Close()
+	defer dbRouter.Close()
 
-	server := server.New(cfg.Server, db, cfg.Auth, logger)
+	server := server.New(cfg.Server, *dbRouter, cfg.Auth, logger)
 	errCh := make(chan error, 1)
 
 	go func() {

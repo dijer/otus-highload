@@ -20,7 +20,7 @@ func New(service *service_user.UserService) *ProfileHandler {
 func (h *ProfileHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value("userId").(int)
 
-	user, err := h.service.GetUser(userID)
+	user, err := h.service.GetUser(r.Context(), userID)
 	if err != nil {
 		utils_server.JsonError(w, http.StatusBadRequest, "Cant get user by userID")
 		return

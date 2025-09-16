@@ -1,6 +1,7 @@
 package service_user
 
 import (
+	"context"
 	"errors"
 
 	"github.com/dijer/otus-highload/backend/internal/models"
@@ -18,17 +19,17 @@ func New(storage *storage_user.UserStorage) *UserService {
 	}
 }
 
-func (s *UserService) CreateUser(user models.UserWithPassword) error {
+func (s *UserService) CreateUser(ctx context.Context, user models.UserWithPassword) error {
 	hashedPassword, err := hashPassword(user.Password)
 	if err != nil {
 		return err
 	}
 
-	return s.storage.CreateUser(user.User, hashedPassword)
+	return s.storage.CreateUser(ctx, user.User, hashedPassword)
 }
 
-func (s *UserService) CheckUserPassword(user models.UserWithPassword) (int, error) {
-	hashedPassword, userID, err := s.storage.GetHashedPassword(user.UserName)
+func (s *UserService) CheckUserPassword(ctx context.Context, user models.UserWithPassword) (int, error) {
+	hashedPassword, userID, err := s.storage.GetHashedPassword(ctx, user.UserName)
 	if err != nil {
 		return 0, err
 	}
@@ -40,8 +41,8 @@ func (s *UserService) CheckUserPassword(user models.UserWithPassword) (int, erro
 	return userID, nil
 }
 
-func (s *UserService) GetUser(userID int) (*models.User, error) {
-	return s.storage.GetUser(userID)
+func (s *UserService) GetUser(ctx context.Context, userID int) (*models.User, error) {
+	return s.storage.GetUser(ctx, userID)
 }
 
 func hashPassword(password string) (string, error) {
@@ -54,6 +55,6 @@ func checkHashedPassword(password, hashedPassword string) bool {
 	return err == nil
 }
 
-func (s *UserService) GetUsers(firstname, lastname string) ([]models.User, error) {
-	return s.storage.GetUsers(firstname, lastname)
+func (s *UserService) GetUsers(ctx context.Context, firstname, lastname string) ([]models.User, error) {
+	return s.storage.GetUsers(ctx, firstname, lastname)
 }
