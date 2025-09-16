@@ -9,7 +9,7 @@ import (
 )
 
 type addFriendRequest struct {
-	FriendID int `json:"friendId"`
+	FriendID int64 `json:"friendId"`
 }
 
 func (h *FriendHandler) AddFriend(w http.ResponseWriter, r *http.Request) {

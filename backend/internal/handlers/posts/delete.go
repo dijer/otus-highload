@@ -9,7 +9,7 @@ import (
 )
 
 type deletePostRequest struct {
-	PostID int `json:"postId"`
+	PostID int64 `json:"postId"`
 }
 
 func (h *PostsHandler) DeletePost(w http.ResponseWriter, r *http.Request) {

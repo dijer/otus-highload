@@ -6,9 +6,9 @@ type ctxKey string
 
 const UserIDKey ctxKey = "userId"
 
-func GetUserID(r *http.Request) int {
+func GetUserID(r *http.Request) int64 {
 	val := r.Context().Value(UserIDKey)
-	if v, ok := val.(int); ok {
+	if v, ok := val.(int64); ok {
 		return v
 	}
 

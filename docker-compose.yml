@@ -1,0 +1,55 @@
+networks:
+    app-network:
+        driver: bridge
+
+services:
+    coordinator:
+        image: citusdata/citus:latest
+        container_name: citus_coordinator
+        ports:
+            - '5433:5432'
+        environment:
+            POSTGRES_USER: otus_user
+            POSTGRES_PASSWORD: otus_password
+            POSTGRES_DB: otus
+            POSTGRES_HOST_AUTH_METHOD: trust
+        networks:
+            - app-network
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U otus_user -d otus']
+            interval: 5s
+            retries: 5
+
+    redis:
+        image: redis:7
+        container_name: otus_redis
+        ports:
+            - '6379:6379'
+        networks:
+            - app-network
+
+    citus_worker1:
+        image: citusdata/citus:latest
+        ports:
+            - '5434:5432'
+        environment:
+            POSTGRES_USER: otus_user
+            POSTGRES_PASSWORD: otus_password
+            POSTGRES_DB: otus
+            POSTGRES_HOST_AUTH_METHOD: trust
+        command: postgres -c listen_addresses='*'
+        networks:
+            - app-network
+
+    citus_worker2:
+        image: citusdata/citus:latest
+        ports:
+            - '5435:5432'
+        environment:
+            POSTGRES_USER: otus_user
+            POSTGRES_PASSWORD: otus_password
+            POSTGRES_DB: otus
+            POSTGRES_HOST_AUTH_METHOD: trust
+        command: postgres -c listen_addresses='*'
+        networks:
+            - app-network

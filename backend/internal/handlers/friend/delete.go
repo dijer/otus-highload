@@ -9,7 +9,7 @@ import (
 )
 
 type deleteFriendRequest struct {
-	FriendID int `json:"friendId"`
+	FriendID int64 `json:"friendId"`
 }
 
 func (h *FriendHandler) RemoveFriend(w http.ResponseWriter, r *http.Request) {

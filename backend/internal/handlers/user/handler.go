@@ -23,7 +23,7 @@ func (h *UserHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	userID, err := strconv.Atoi(id)
+	userID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		utils_server.JsonError(w, http.StatusBadRequest, "Invalid userID")
 		return

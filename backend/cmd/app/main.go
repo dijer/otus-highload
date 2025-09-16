@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/dijer/otus-highload/backend/internal/config"
+	infra_citus "github.com/dijer/otus-highload/backend/internal/infra/citus"
 	infra_database "github.com/dijer/otus-highload/backend/internal/infra/database"
 	infra_redis "github.com/dijer/otus-highload/backend/internal/infra/redis"
 	"github.com/dijer/otus-highload/backend/internal/logger"
@@ -17,7 +18,7 @@ import (
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "./config/config.toml", "Path to configuration file")
+	flag.StringVar(&configFile, "config", "./config.toml", "Path to configuration file")
 }
 
 func main() {
@@ -46,7 +47,13 @@ func main() {
 	}
 	defer dbRouter.Close()
 
-	redis, err := infra_redis.InitRedis(ctx, cfg.RedisConfig)
+	if cfg.Citus.Coordinator {
+		if err := infra_citus.InitCitus(ctx, dbRouter, cfg.Citus.Nodes, cfg.Database); err != nil {
+			log.Fatal(err.Error())
+		}
+	}
+
+	redis, err := infra_redis.InitRedis(ctx, cfg.Redis)
 	if err != nil {
 		log.Error(err.Error())
 		return

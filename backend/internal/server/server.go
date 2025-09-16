@@ -8,6 +8,7 @@ import (
 
 	cache_feed "github.com/dijer/otus-highload/backend/internal/cache/feed"
 	handler_auth "github.com/dijer/otus-highload/backend/internal/handlers/auth"
+	handler_dialogs "github.com/dijer/otus-highload/backend/internal/handlers/dialogs"
 	handler_friend "github.com/dijer/otus-highload/backend/internal/handlers/friend"
 	handler_posts "github.com/dijer/otus-highload/backend/internal/handlers/posts"
 	handler_profile "github.com/dijer/otus-highload/backend/internal/handlers/profile"
@@ -16,9 +17,11 @@ import (
 	infra_database "github.com/dijer/otus-highload/backend/internal/infra/database"
 	"github.com/dijer/otus-highload/backend/internal/logger"
 	middleware_auth "github.com/dijer/otus-highload/backend/internal/middlewares/auth"
+	service_dialogs "github.com/dijer/otus-highload/backend/internal/services/dialogs"
 	service_friend "github.com/dijer/otus-highload/backend/internal/services/friend"
 	service_posts "github.com/dijer/otus-highload/backend/internal/services/posts"
 	service_user "github.com/dijer/otus-highload/backend/internal/services/user"
+	storage_dialogs "github.com/dijer/otus-highload/backend/internal/storage/dialogs"
 	storage_friend "github.com/dijer/otus-highload/backend/internal/storage/friend"
 	storage_posts "github.com/dijer/otus-highload/backend/internal/storage/posts"
 	storage_user "github.com/dijer/otus-highload/backend/internal/storage/user"
@@ -69,7 +72,7 @@ func (s *Server) Start(ctx context.Context) error {
 	r.HandleFunc("/user/get/{id}", userHandler.Handler).Methods(http.MethodGet)
 
 	profileHandler := handler_profile.New(userService)
-	r.Handle("/user/profile", authMiddleware.Handler(http.HandlerFunc(profileHandler.Handler))).Methods(http.MethodGet)
+	r.Handle("/user/profile", authMiddleware.Handler(http.HandlerFunc(profileHandler.Handler))).Methods(http.MethodPost)
 
 	userSearchHandler := handler_user_search.New(userService)
 	r.HandleFunc("/user/search", userSearchHandler.Handler).Methods(http.MethodGet)
@@ -86,6 +89,12 @@ func (s *Server) Start(ctx context.Context) error {
 	postsHandler := handler_posts.New(postsService)
 	r.Handle("/post/create", authMiddleware.Handler(http.HandlerFunc(postsHandler.CreatePost))).Methods(http.MethodPost)
 	r.Handle("/post/feed", authMiddleware.Handler(http.HandlerFunc(postsHandler.GetFeed))).Methods(http.MethodGet)
+
+	dialogsStorage := storage_dialogs.New(s.dbRouter)
+	dialogsService := service_dialogs.New(dialogsStorage)
+	dialogsHandler := handler_dialogs.New(dialogsService)
+	r.Handle("/dialog/{userId}/send", authMiddleware.Handler(http.HandlerFunc(dialogsHandler.Send))).Methods(http.MethodPost)
+	r.Handle("/dialog/{userId}/list", authMiddleware.Handler(http.HandlerFunc(dialogsHandler.List))).Methods(http.MethodGet)
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},

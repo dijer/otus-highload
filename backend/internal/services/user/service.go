@@ -28,7 +28,7 @@ func (s *UserService) CreateUser(ctx context.Context, user models.UserWithPasswo
 	return s.storage.CreateUser(ctx, user.User, hashedPassword)
 }
 
-func (s *UserService) CheckUserPassword(ctx context.Context, user models.UserWithPassword) (int, error) {
+func (s *UserService) CheckUserPassword(ctx context.Context, user models.UserWithPassword) (int64, error) {
 	hashedPassword, userID, err := s.storage.GetHashedPassword(ctx, user.UserName)
 	if err != nil {
 		return 0, err
@@ -41,7 +41,7 @@ func (s *UserService) CheckUserPassword(ctx context.Context, user models.UserWit
 	return userID, nil
 }
 
-func (s *UserService) GetUser(ctx context.Context, userID int) (*models.User, error) {
+func (s *UserService) GetUser(ctx context.Context, userID int64) (*models.User, error) {
 	return s.storage.GetUser(ctx, userID)
 }
 

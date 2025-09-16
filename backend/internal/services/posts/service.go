@@ -17,22 +17,22 @@ func New(storage *storage_posts.PostsStorage) *PostsService {
 	}
 }
 
-func (s *PostsService) CreatePost(ctx context.Context, userID int, content string) (*models.Post, error) {
+func (s *PostsService) CreatePost(ctx context.Context, userID int64, content string) (*models.Post, error) {
 	return s.storage.CreatePost(ctx, userID, content)
 }
 
-func (s *PostsService) UpdatePost(ctx context.Context, userID, postID int, content string) error {
+func (s *PostsService) UpdatePost(ctx context.Context, userID, postID int64, content string) error {
 	return s.storage.UpdatePost(ctx, userID, postID, content)
 }
 
-func (s *PostsService) DeletePost(ctx context.Context, userID, postID int) error {
+func (s *PostsService) DeletePost(ctx context.Context, userID, postID int64) error {
 	return s.storage.DeletePost(ctx, userID, postID)
 }
 
-func (s *PostsService) GetPost(ctx context.Context, userID, postID int) (*models.Post, error) {
+func (s *PostsService) GetPost(ctx context.Context, userID, postID int64) (*models.Post, error) {
 	return s.storage.GetPost(ctx, userID, postID)
 }
 
-func (s *PostsService) GetFeed(ctx context.Context, userID int, limit, offset *int) ([]models.Post, error) {
+func (s *PostsService) GetFeed(ctx context.Context, userID int64, limit, offset *int64) ([]models.Post, error) {
 	return s.storage.GetFeed(ctx, userID, limit, offset)
 }
