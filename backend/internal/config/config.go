@@ -5,10 +5,11 @@ import (
 )
 
 type Config struct {
-	Database DatabaseConf   `toml:"database"`
-	Replicas []DatabaseConf `toml:"replica"`
-	Server   ServerConf     `toml:"server"`
-	Auth     AuthConf       `toml:"auth"`
+	Database    DatabaseConf   `toml:"database"`
+	Replicas    []DatabaseConf `toml:"replica"`
+	Server      ServerConf     `toml:"server"`
+	Auth        AuthConf       `toml:"auth"`
+	RedisConfig RedisConf      `toml:"redis"`
 }
 
 type DatabaseConf struct {
@@ -28,6 +29,13 @@ type AuthConf struct {
 	JWTCookieName  string `toml:"jwt_cookie_name"`
 	JWTKey         string `toml:"jwt_key"`
 	JWTExpireHours int    `toml:"jwt_expire_hours"`
+}
+
+type RedisConf struct {
+	Host     string `toml:"host"`
+	Port     int    `toml:"port"`
+	Password string `toml:"password"`
+	DBIndex  int    `toml:"db"`
 }
 
 func New(filepath string) (*Config, error) {

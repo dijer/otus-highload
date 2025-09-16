@@ -36,10 +36,10 @@ func New(ctx context.Context, config config.DatabaseConf, replicasConfig []confi
 	for _, replicaConfig := range replicasConfig {
 		replicaDb, err := sql.Open("postgres", buildDsn(replicaConfig))
 		if err != nil {
-			return nil, err
+			continue
 		}
 		if err := replicaDb.PingContext(ctx); err != nil {
-			return nil, err
+			continue
 		}
 		replicas = append(replicas, replicaDb)
 	}

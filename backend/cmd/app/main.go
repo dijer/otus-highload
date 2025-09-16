@@ -8,6 +8,7 @@ import (
 
 	"github.com/dijer/otus-highload/backend/internal/config"
 	infra_database "github.com/dijer/otus-highload/backend/internal/infra/database"
+	infra_redis "github.com/dijer/otus-highload/backend/internal/infra/redis"
 	"github.com/dijer/otus-highload/backend/internal/logger"
 	"github.com/dijer/otus-highload/backend/internal/server"
 	"go.uber.org/zap"
@@ -45,7 +46,14 @@ func main() {
 	}
 	defer dbRouter.Close()
 
-	server := server.New(cfg.Server, *dbRouter, cfg.Auth, logger)
+	redis, err := infra_redis.InitRedis(ctx, cfg.RedisConfig)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	defer redis.Close()
+
+	server := server.New(cfg.Server, *dbRouter, cfg.Auth, logger, redis)
 	errCh := make(chan error, 1)
 
 	go func() {
