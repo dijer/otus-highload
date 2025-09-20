@@ -9,6 +9,8 @@ type Config struct {
 	Replicas []DatabaseConf `toml:"replica"`
 	Server   ServerConf     `toml:"server"`
 	Auth     AuthConf       `toml:"auth"`
+	Redis    RedisConf      `toml:"redis"`
+	Citus    CitusConf      `toml:"citus"`
 }
 
 type DatabaseConf struct {
@@ -28,6 +30,23 @@ type AuthConf struct {
 	JWTCookieName  string `toml:"jwt_cookie_name"`
 	JWTKey         string `toml:"jwt_key"`
 	JWTExpireHours int    `toml:"jwt_expire_hours"`
+}
+
+type RedisConf struct {
+	Host     string `toml:"host"`
+	Port     int    `toml:"port"`
+	Password string `toml:"password"`
+	DBIndex  int    `toml:"db"`
+}
+
+type CitusConf struct {
+	Coordinator bool        `toml:"coordinator"`
+	Nodes       []CitusNode `toml:"node"`
+}
+
+type CitusNode struct {
+	Host string `toml:"host"`
+	Port int    `toml:"port"`
 }
 
 func New(filepath string) (*Config, error) {

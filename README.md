@@ -10,3 +10,20 @@
 
 1. запустить backend `make backend` (port 8080)
 2. запустить frontend `make frontend` (port 8000)
+3. запустить инфру (бд, редис)
+
+```
+make start
+```
+
+## Stop
+
+```
+make stop
+```
+
+## Restart (backend)
+
+```
+make restart
+```

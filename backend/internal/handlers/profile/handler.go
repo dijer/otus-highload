@@ -1,31 +1,27 @@
-package handler_user
+package handler_profile
 
 import (
 	"net/http"
-	"strconv"
 
 	service_user "github.com/dijer/otus-highload/backend/internal/services/user"
+	"github.com/dijer/otus-highload/backend/internal/utils/httpctx"
 	utils_server "github.com/dijer/otus-highload/backend/internal/utils/server"
-	"github.com/gorilla/mux"
 )
 
-type UserHandler struct {
+type ProfileHandler struct {
 	service *service_user.UserService
 }
 
-func New(service *service_user.UserService) *UserHandler {
-	return &UserHandler{
+func New(service *service_user.UserService) *ProfileHandler {
+	return &ProfileHandler{
 		service: service,
 	}
 }
 
-func (h *UserHandler) Handler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	userID, err := strconv.Atoi(id)
-	if err != nil {
-		utils_server.JsonError(w, http.StatusBadRequest, "Invalid userID")
+func (h *ProfileHandler) Handler(w http.ResponseWriter, r *http.Request) {
+	userID := httpctx.GetUserID(r)
+	if userID == 0 {
+		utils_server.JsonError(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
