@@ -16,10 +16,10 @@ func New(storage *storage_friend.FriendStorage) *FriendService {
 	}
 }
 
-func (s *FriendService) AddFriend(ctx context.Context, userID, friendID int) error {
+func (s *FriendService) AddFriend(ctx context.Context, userID, friendID int64) error {
 	return s.storage.AddFriend(ctx, userID, friendID)
 }
 
-func (s *FriendService) DeleteFriend(ctx context.Context, userID, friendID int) error {
+func (s *FriendService) DeleteFriend(ctx context.Context, userID, friendID int64) error {
 	return s.storage.DeleteFriend(ctx, userID, friendID)
 }

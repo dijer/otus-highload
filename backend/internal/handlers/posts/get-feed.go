@@ -9,8 +9,8 @@ import (
 )
 
 type getFeedRequest struct {
-	Limit  *int `json:"limit"`
-	Offset *int `json:"offset"`
+	Limit  *int64 `json:"limit"`
+	Offset *int64 `json:"offset"`
 }
 
 func (h *PostsHandler) GetFeed(w http.ResponseWriter, r *http.Request) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 	"sync/atomic"
 
 	"github.com/dijer/otus-highload/backend/internal/config"
@@ -23,7 +24,11 @@ func New(ctx context.Context, config config.DatabaseConf, replicasConfig []confi
 		return nil, err
 	}
 
-	if err := goose.Up(masterDb, "./migrations"); err != nil {
+	migrationsPath := os.Getenv("MIGRATIONS_PATH")
+	if migrationsPath == "" {
+		migrationsPath = "./migrations"
+	}
+	if err := goose.Up(masterDb, migrationsPath); err != nil {
 		return nil, err
 	}
 

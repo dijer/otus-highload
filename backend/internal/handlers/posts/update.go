@@ -9,7 +9,7 @@ import (
 )
 
 type updatePostRequest struct {
-	PostID  int    `json:"postId"`
+	PostID  int64  `json:"postId"`
 	Content string `json:"content"`
 }
 

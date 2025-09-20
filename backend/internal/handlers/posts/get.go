@@ -9,7 +9,7 @@ import (
 )
 
 type getPostRequest struct {
-	PostID int `json:"postId"`
+	PostID int64 `json:"postId"`
 }
 
 func (h *PostsHandler) GetPost(w http.ResponseWriter, r *http.Request) {

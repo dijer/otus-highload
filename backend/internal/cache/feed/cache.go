@@ -22,11 +22,11 @@ func New(redis *redis.Client) *FeedCache {
 	}
 }
 
-func makeRedisKey(userID int) string {
+func makeRedisKey(userID int64) string {
 	return fmt.Sprintf("feed:%d", userID)
 }
 
-func (c *FeedCache) PushToFeed(ctx context.Context, userID int, post models.Post) error {
+func (c *FeedCache) PushToFeed(ctx context.Context, userID int64, post models.Post) error {
 	key := makeRedisKey(userID)
 
 	data, err := json.Marshal(post)
@@ -41,7 +41,7 @@ func (c *FeedCache) PushToFeed(ctx context.Context, userID int, post models.Post
 	return c.redis.LTrim(ctx, key, 0, maxFeedSize-1).Err()
 }
 
-func (c *FeedCache) RemoveFromFeed(ctx context.Context, userID, postID int, followers []int) error {
+func (c *FeedCache) RemoveFromFeed(ctx context.Context, userID, postID int64, followers []int64) error {
 	for _, followerID := range followers {
 		key := makeRedisKey(followerID)
 
@@ -64,7 +64,7 @@ func (c *FeedCache) RemoveFromFeed(ctx context.Context, userID, postID int, foll
 	return nil
 }
 
-func (c *FeedCache) GetFeed(ctx context.Context, userID int, limit, offset *int) ([]models.Post, error) {
+func (c *FeedCache) GetFeed(ctx context.Context, userID int64, limit, offset *int64) ([]models.Post, error) {
 	l := utils_pointer.ValueOrDefault(limit, 20)
 	o := utils_pointer.ValueOrDefault(offset, 0)
 	key := makeRedisKey(userID)

@@ -45,9 +45,9 @@ func (s *UserStorage) CreateUser(ctx context.Context, user models.User, hashedPa
 	return err
 }
 
-func (s *UserStorage) GetHashedPassword(ctx context.Context, username string) (string, int, error) {
+func (s *UserStorage) GetHashedPassword(ctx context.Context, username string) (string, int64, error) {
 	var hashedPassword string
-	var userID int
+	var userID int64
 	err := s.dbRouter.QueryRow(ctx, `SELECT id, password_hash FROM users WHERE username = $1`, username).Scan(&userID, &hashedPassword)
 	if err != nil {
 		return "", 0, err
@@ -56,7 +56,7 @@ func (s *UserStorage) GetHashedPassword(ctx context.Context, username string) (s
 	return hashedPassword, userID, nil
 }
 
-func (s *UserStorage) GetUser(ctx context.Context, userID int) (*models.User, error) {
+func (s *UserStorage) GetUser(ctx context.Context, userID int64) (*models.User, error) {
 	var user models.User
 	err := s.dbRouter.QueryRow(ctx, `SELECT username, first_name, last_name, birthday, gender, interests, city FROM users WHERE id = $1`, userID).Scan(
 		&user.UserName,

@@ -5,11 +5,12 @@ import (
 )
 
 type Config struct {
-	Database    DatabaseConf   `toml:"database"`
-	Replicas    []DatabaseConf `toml:"replica"`
-	Server      ServerConf     `toml:"server"`
-	Auth        AuthConf       `toml:"auth"`
-	RedisConfig RedisConf      `toml:"redis"`
+	Database DatabaseConf   `toml:"database"`
+	Replicas []DatabaseConf `toml:"replica"`
+	Server   ServerConf     `toml:"server"`
+	Auth     AuthConf       `toml:"auth"`
+	Redis    RedisConf      `toml:"redis"`
+	Citus    CitusConf      `toml:"citus"`
 }
 
 type DatabaseConf struct {
@@ -36,6 +37,16 @@ type RedisConf struct {
 	Port     int    `toml:"port"`
 	Password string `toml:"password"`
 	DBIndex  int    `toml:"db"`
+}
+
+type CitusConf struct {
+	Coordinator bool        `toml:"coordinator"`
+	Nodes       []CitusNode `toml:"node"`
+}
+
+type CitusNode struct {
+	Host string `toml:"host"`
+	Port int    `toml:"port"`
 }
 
 func New(filepath string) (*Config, error) {

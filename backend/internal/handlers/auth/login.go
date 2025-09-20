@@ -41,7 +41,7 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	utils_server.JsonSuccess(w, http.StatusOK, "Login successful", nil)
 }
 
-func (h *AuthHandler) generateJWT(userID int) (string, error) {
+func (h *AuthHandler) generateJWT(userID int64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userID,
 		"exp":    time.Now().Add(time.Duration(h.authCfg.JWTExpireHours) * time.Hour).Unix(),
