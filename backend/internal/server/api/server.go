@@ -1,4 +1,4 @@
-package server
+package api_server
 
 import (
 	"context"
@@ -26,6 +26,7 @@ import (
 	storage_posts "github.com/dijer/otus-highload/backend/internal/storage/posts"
 	storage_user "github.com/dijer/otus-highload/backend/internal/storage/user"
 	"github.com/gorilla/mux"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/cors"
 
@@ -38,6 +39,7 @@ type Server struct {
 	authCfg  config.AuthConf
 	log      logger.Logger
 	redis    *redis.Client
+	rabbitmq *amqp.Channel
 }
 
 func New(
@@ -46,12 +48,14 @@ func New(
 	authCfg config.AuthConf,
 	log logger.Logger,
 	redis *redis.Client,
+	rabbitmq *amqp.Channel,
 ) *Server {
 	return &Server{
 		cfg:      cfg,
 		dbRouter: dbRouter,
 		authCfg:  authCfg,
 		log:      log,
+		rabbitmq: rabbitmq,
 	}
 }
 
@@ -85,7 +89,7 @@ func (s *Server) Start(ctx context.Context) error {
 
 	postsCache := cache_feed.New(s.redis)
 	postsStorage := storage_posts.New(s.dbRouter, postsCache, s.log)
-	postsService := service_posts.New(postsStorage)
+	postsService := service_posts.New(postsStorage, s.rabbitmq)
 	postsHandler := handler_posts.New(postsService)
 	r.Handle("/post/create", authMiddleware.Handler(http.HandlerFunc(postsHandler.CreatePost))).Methods(http.MethodPost)
 	r.Handle("/post/feed", authMiddleware.Handler(http.HandlerFunc(postsHandler.GetFeed))).Methods(http.MethodGet)

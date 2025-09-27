@@ -7,7 +7,7 @@ services:
         image: citusdata/citus:latest
         container_name: citus_coordinator
         ports:
-            - '5433:5432'
+            - "5433:5432"
         environment:
             POSTGRES_USER: otus_user
             POSTGRES_PASSWORD: otus_password
@@ -16,7 +16,7 @@ services:
         networks:
             - app-network
         healthcheck:
-            test: ['CMD-SHELL', 'pg_isready -U otus_user -d otus']
+            test: ["CMD-SHELL", "pg_isready -U otus_user -d otus"]
             interval: 5s
             retries: 5
 
@@ -24,14 +24,14 @@ services:
         image: redis:7
         container_name: otus_redis
         ports:
-            - '6379:6379'
+            - "6379:6379"
         networks:
             - app-network
 
     citus_worker1:
         image: citusdata/citus:latest
         ports:
-            - '5434:5432'
+            - "5434:5432"
         environment:
             POSTGRES_USER: otus_user
             POSTGRES_PASSWORD: otus_password
@@ -44,12 +44,25 @@ services:
     citus_worker2:
         image: citusdata/citus:latest
         ports:
-            - '5435:5432'
+            - "5435:5432"
         environment:
             POSTGRES_USER: otus_user
             POSTGRES_PASSWORD: otus_password
             POSTGRES_DB: otus
             POSTGRES_HOST_AUTH_METHOD: trust
         command: postgres -c listen_addresses='*'
+        networks:
+            - app-network
+
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbitmq
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        environment:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
+        restart: unless-stopped
         networks:
             - app-network

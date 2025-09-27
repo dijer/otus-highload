@@ -7,12 +7,13 @@ import (
 	"syscall"
 
 	"github.com/dijer/otus-highload/backend/internal/config"
+	databus_feed "github.com/dijer/otus-highload/backend/internal/databus/feed"
 	infra_citus "github.com/dijer/otus-highload/backend/internal/infra/citus"
 	infra_database "github.com/dijer/otus-highload/backend/internal/infra/database"
 	"github.com/dijer/otus-highload/backend/internal/infra/rabbitmq"
 	infra_redis "github.com/dijer/otus-highload/backend/internal/infra/redis"
 	"github.com/dijer/otus-highload/backend/internal/logger"
-	server_api "github.com/dijer/otus-highload/backend/internal/server/api"
+	server_websocket "github.com/dijer/otus-highload/backend/internal/server/websocket"
 	"go.uber.org/zap"
 )
 
@@ -69,7 +70,12 @@ func main() {
 	defer rConn.Close()
 	defer rCh.Close()
 
-	server := server_api.New(cfg.Server, *dbRouter, cfg.Auth, logger, redis, rCh)
+	if err := databus_feed.ConsumePostCreated(ctx, rCh, dbRouter); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	server := server_websocket.New(cfg.Server, *dbRouter, cfg.Auth, logger, redis, rCh)
 	errCh := make(chan error, 1)
 
 	go func() {
