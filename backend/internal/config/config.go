@@ -11,6 +11,7 @@ type Config struct {
 	Auth     AuthConf       `toml:"auth"`
 	Redis    RedisConf      `toml:"redis"`
 	Citus    CitusConf      `toml:"citus"`
+	RabbitMQ RabbitMQConf   `toml:"rabbitmq"`
 }
 
 type DatabaseConf struct {
@@ -22,8 +23,9 @@ type DatabaseConf struct {
 }
 
 type ServerConf struct {
-	Host string `toml:"host"`
-	Port int    `toml:"port"`
+	Host   string `toml:"host"`
+	Port   int    `toml:"port"`
+	WSPort int    `toml:"wsPort"`
 }
 
 type AuthConf struct {
@@ -47,6 +49,13 @@ type CitusConf struct {
 type CitusNode struct {
 	Host string `toml:"host"`
 	Port int    `toml:"port"`
+}
+
+type RabbitMQConf struct {
+	Host     string `toml:"host"`
+	Port     int    `toml:"port"`
+	User     string `toml:"user"`
+	Password string `toml:"password"`
 }
 
 func New(filepath string) (*Config, error) {
