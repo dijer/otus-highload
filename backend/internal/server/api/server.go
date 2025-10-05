@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	cache_auth "github.com/dijer/otus-highload/backend/internal/cache/auth"
 	cache_feed "github.com/dijer/otus-highload/backend/internal/cache/feed"
 	handler_auth "github.com/dijer/otus-highload/backend/internal/handlers/auth"
 	handler_dialogs "github.com/dijer/otus-highload/backend/internal/handlers/dialogs"
@@ -56,6 +57,7 @@ func New(
 		authCfg:  authCfg,
 		log:      log,
 		rabbitmq: rabbitmq,
+		redis:    redis,
 	}
 }
 
@@ -65,10 +67,13 @@ func (s *Server) Start(ctx context.Context) error {
 	userStorage := storage_user.New(s.dbRouter)
 	userService := service_user.New(userStorage)
 
-	authHandler := handler_auth.New(userService, s.authCfg)
+	authCache := cache_auth.New(s.redis)
+
+	authHandler := handler_auth.New(userService, s.authCfg, authCache)
 	r.HandleFunc("/login", authHandler.LoginHandler).Methods(http.MethodPost)
 	r.HandleFunc("/user/register", authHandler.RegisterHandler).Methods(http.MethodPost)
-	authMiddleware := middleware_auth.New(s.authCfg)
+
+	authMiddleware := middleware_auth.New(s.authCfg, authCache)
 	r.Handle("/user/logout", authMiddleware.Handler(http.HandlerFunc(authHandler.LogoutHandler))).Methods(http.MethodGet)
 	r.Handle("/user/check", authMiddleware.Handler(http.HandlerFunc(authHandler.CheckAuthHandler))).Methods(http.MethodGet)
 
