@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	cache_auth "github.com/dijer/otus-highload/backend/internal/cache/auth"
 	cache_feed "github.com/dijer/otus-highload/backend/internal/cache/feed"
 	"github.com/dijer/otus-highload/backend/internal/config"
 	handler_posts_subscribe "github.com/dijer/otus-highload/backend/internal/handlers/posts-subscribe"
@@ -50,7 +51,8 @@ func New(
 func (s *WsServer) Start(ctx context.Context) error {
 	r := mux.NewRouter()
 
-	authMiddleware := middleware_auth.New(s.authCfg)
+	authCache := cache_auth.New(s.redis)
+	authMiddleware := middleware_auth.New(s.authCfg, authCache)
 
 	postsCache := cache_feed.New(s.redis)
 	postsStorage := storage_posts.New(s.dbRouter, postsCache, s.log)

@@ -8,6 +8,7 @@ import (
 	"github.com/dijer/otus-highload/backend/internal/models"
 	utils_server "github.com/dijer/otus-highload/backend/internal/utils/server"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +25,14 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenStr, err := h.generateJWT(userID)
+	sessionUUID := uuid.NewString()
+	ttl := time.Hour * time.Duration(h.authCfg.JWTExpireHours)
+	if err := h.cache.SaveSession(r.Context(), sessionUUID, userID, ttl); err != nil {
+		utils_server.JsonError(w, http.StatusInternalServerError, "cache save session error")
+		return
+	}
+
+	tokenStr, err := h.generateJWT(userID, sessionUUID)
 	if err != nil {
 		utils_server.JsonError(w, http.StatusInternalServerError, "Internal server error")
 		return
@@ -41,9 +49,10 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	utils_server.JsonSuccess(w, http.StatusOK, "Login successful", nil)
 }
 
-func (h *AuthHandler) generateJWT(userID int64) (string, error) {
+func (h *AuthHandler) generateJWT(userID int64, sessionUUID string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userID,
+		"uuid":   sessionUUID,
 		"exp":    time.Now().Add(time.Duration(h.authCfg.JWTExpireHours) * time.Hour).Unix(),
 	})
 

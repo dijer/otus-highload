@@ -19,9 +19,12 @@ func New(dbRouter infra_database.DBRouter) *UserStorage {
 	}
 }
 
-func (s *UserStorage) CreateUser(ctx context.Context, user models.User, hashedPassword string) error {
-	_, err := s.dbRouter.Exec(ctx, `INSERT INTO users (username, password_hash, first_name, last_name, birthday, gender, interests, city)
-				VALUES($1, $2, $3, $4, $5, $6, $7, $8)`,
+func (s *UserStorage) CreateUser(ctx context.Context, user models.User, hashedPassword string) (int64, error) {
+	var userID int64
+	err := s.dbRouter.QueryRow(ctx, `INSERT INTO users (username, password_hash, first_name, last_name, birthday, gender, interests, city)
+				VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+				RETURNING id
+			`,
 		user.UserName,
 		hashedPassword,
 		user.FirstName,
@@ -30,19 +33,19 @@ func (s *UserStorage) CreateUser(ctx context.Context, user models.User, hashedPa
 		user.Gender,
 		pq.Array(user.Interests),
 		user.City,
-	)
+	).Scan(&userID)
 
 	if err == nil {
-		return nil
+		return 0, err
 	}
 
 	if pqErr, ok := err.(*pq.Error); ok {
 		if pqErr.Code == "23505" {
-			return errs.ErrUserAlreadyExists
+			return 0, errs.ErrUserAlreadyExists
 		}
 	}
 
-	return err
+	return userID, nil
 }
 
 func (s *UserStorage) GetHashedPassword(ctx context.Context, username string) (string, int64, error) {

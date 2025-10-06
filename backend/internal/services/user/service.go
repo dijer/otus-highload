@@ -19,10 +19,10 @@ func New(storage *storage_user.UserStorage) *UserService {
 	}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user models.UserWithPassword) error {
+func (s *UserService) CreateUser(ctx context.Context, user models.UserWithPassword) (int64, error) {
 	hashedPassword, err := hashPassword(user.Password)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	return s.storage.CreateUser(ctx, user.User, hashedPassword)
